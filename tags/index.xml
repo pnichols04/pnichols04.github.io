@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Philip Nichols</title>
+    <link>https://pnichols04.github.io/tags/</link>
+    <description>Recent content in Tags on Philip Nichols</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2022 Philip Nichols. All Rights Reserved.</copyright>
+    <lastBuildDate>Tue, 30 Aug 2022 09:00:00 -0400</lastBuildDate><atom:link href="https://pnichols04.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Boids</title>
+      <link>https://pnichols04.github.io/tags/boids/</link>
+      <pubDate>Tue, 30 Aug 2022 09:00:00 -0400</pubDate>
+      
+      <guid>https://pnichols04.github.io/tags/boids/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Three.js</title>
+      <link>https://pnichols04.github.io/tags/three.js/</link>
+      <pubDate>Tue, 30 Aug 2022 09:00:00 -0400</pubDate>
+      
+      <guid>https://pnichols04.github.io/tags/three.js/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
+

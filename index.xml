@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Philip Nichols</title>
+    <link>https://pnichols04.github.io/</link>
+    <description>Recent content on Philip Nichols</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <copyright>Copyright © 2022 Philip Nichols. All Rights Reserved.</copyright>
+    <lastBuildDate>Tue, 30 Aug 2022 09:00:00 -0400</lastBuildDate><atom:link href="https://pnichols04.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Boids in Three.js, Part Zero: Setting Up</title>
+      <link>https://pnichols04.github.io/blog/threejs-boids-0-setting-up/</link>
+      <pubDate>Tue, 30 Aug 2022 09:00:00 -0400</pubDate>
+      
+      <guid>https://pnichols04.github.io/blog/threejs-boids-0-setting-up/</guid>
+      <description>The first in a series of posts on creating a boids-type flocking  simulation using Three.js.  This post covers initial project setup,  including bootstrapping Three.js, creating a geometry for the  individual boids, and wiring up performance counters and a GUI.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://pnichols04.github.io/about/</link>
+      <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnichols04.github.io/about/</guid>
+      <description>I’ve been programming for the web since before it was really considered “programming.” That means I’ve made my share of passé offenses against good aesthetics (I’m looking at you, iframe sidebars and procedural MIDI theme music). But it also means I’ve seen enough tech come and go to know what adds enough to the web as a development platform to have staying power. It also means I can build sites and apps on the cutting edge without creating tomorrow’s legacy support burden.</description>
+    </item>
+    
+    <item>
+      <title>Contact Me</title>
+      <link>https://pnichols04.github.io/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnichols04.github.io/contact/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Offline</title>
+      <link>https://pnichols04.github.io/offline/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pnichols04.github.io/offline/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
+

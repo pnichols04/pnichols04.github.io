@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://pnichols04.github.io/sitemap.xml

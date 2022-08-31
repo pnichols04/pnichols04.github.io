@@ -1,0 +1,970 @@
+<!doctype html>
+<html class="position-relative" itemscope itemtype="http://schema.org/WebPage" lang="en"
+  data-bs-theme="light" data-palette="blue-gray">
+  <head><script src="https://pnichols04.github.io/assets/init/bundle.min.7dc108237a97fe302179279ffdb4a7a1e0a1c30a356856f510d820d7485abeea.js" integrity="sha256-fcEII3qX/jAheSef/bSnoeChwwo1aFb1ENgg10havuo=" crossorigin="anonymous"></script>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Boids in Three.js, Part Zero: Setting Up - Philip Nichols</title>
+    <link rel="icon" href="https://pnichols04.github.io/favicon_hua60f18f573af22f2d9415dd09fbe0b74_6576_16x16_resize_box_3.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="https://pnichols04.github.io/favicon_hua60f18f573af22f2d9415dd09fbe0b74_6576_32x32_resize_box_3.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="https://pnichols04.github.io/favicon_hua60f18f573af22f2d9415dd09fbe0b74_6576_180x180_resize_box_3.png" sizes="180x180" type="image/png">
+    <link rel="icon" href="https://pnichols04.github.io/favicon_hua60f18f573af22f2d9415dd09fbe0b74_6576_150x150_resize_box_3.png" sizes="150x150" type="image/png">
+    <link rel="icon" href="https://pnichols04.github.io/favicon_hua60f18f573af22f2d9415dd09fbe0b74_6576_192x192_resize_box_3.png" sizes="192x192" type="image/png">
+<link rel="mask-icon" href="https://pnichols04.github.io/safari-pinned-tab.svg" color="#6f42c1">
+<meta name="keywords" content="" />
+<meta name="description" content="The first in a series of posts on creating a boids-type flocking  simulation using Three.js.  This post covers initial project setup,  including bootstrapping Three.js, creating a geometry for the  individual boids, and wiring up performance counters and a GUI." />
+    <meta name="robots" content="index, follow" /><meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://pnichols04.github.io/many-boids.webp"/>
+
+<meta name="twitter:title" content="Boids in Three.js, Part Zero: Setting Up"/>
+<meta name="twitter:description" content="The first in a series of posts on creating a boids-type flocking  simulation using Three.js.  This post covers initial project setup,  including bootstrapping Three.js, creating a geometry for the  individual boids, and wiring up performance counters and a GUI."/>
+<meta name="twitter:site" content="@PhilipNichols04"/>
+<meta property="og:title" content="Boids in Three.js, Part Zero: Setting Up" />
+<meta property="og:description" content="The first in a series of posts on creating a boids-type flocking  simulation using Three.js.  This post covers initial project setup,  including bootstrapping Three.js, creating a geometry for the  individual boids, and wiring up performance counters and a GUI." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://pnichols04.github.io/blog/threejs-boids-0-setting-up/" /><meta property="og:image" content="https://pnichols04.github.io/many-boids.webp" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2022-08-30T09:00:00-04:00" />
+<meta property="article:modified_time" content="2022-08-30T09:00:00-04:00" />
+
+
+<meta itemprop="name" content="Boids in Three.js, Part Zero: Setting Up">
+<meta itemprop="description" content="The first in a series of posts on creating a boids-type flocking  simulation using Three.js.  This post covers initial project setup,  including bootstrapping Three.js, creating a geometry for the  individual boids, and wiring up performance counters and a GUI."><meta itemprop="datePublished" content="2022-08-30T09:00:00-04:00" />
+<meta itemprop="dateModified" content="2022-08-30T09:00:00-04:00" />
+<meta itemprop="wordCount" content="2073"><meta itemprop="image" content="https://pnichols04.github.io/many-boids.webp">
+<meta itemprop="keywords" content="Three.js,Boids," />
+  <link rel="manifest" href="https://pnichols04.github.io/manifest.json">
+
+<link data-precache rel="stylesheet" href="https://pnichols04.github.io/assets/main/bundle.min.e4ee0c975bf0bf6f1829eab92df4048ae25ee2520100a1ef93ecf591b582ea34.css" integrity="sha256-5O4Ml1vwv28YKeq5LfQEiuJe4lIBAKHvk+z1kbWC6jQ=" crossorigin="anonymous">
+
+    <link data-precache rel="stylesheet" href="https://pnichols04.github.io/assets/viewer/bundle.min.6d0fc65b8b058ac563091dc5c36f61afba5dd705058680aa24f1d5a3bcf0064d.css" integrity="sha256-bQ/GW4sFisVjCR3Fw29hr7pd1wUFhoCqJPHVo7zwBk0=" crossorigin="anonymous">
+</head>
+  <body><header>
+  
+<nav class="top-app-bar shadow navbar navbar-expand-lg fixed-top">
+  <div class="container">
+<a class="navbar-brand d-flex align-items-center flex-grow-1 flex-lg-grow-0 text-lg-start ms-2 ms-lg-0 mx-auto me-lg-2" href="https://pnichols04.github.io/">
+    <picture><img class="logo " alt="Logo" src="https://pnichols04.github.io/images/folded-en-logo.webp" loading="lazy" width="256" height="256" />
+</picture>Philip Nichols
+</a>
+    <button class="navbar-toggler order-5" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarMenus"
+      aria-controls="navbarMenus" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-ellipsis-h"></i>
+    </button>
+    <div class="offcanvas-lg offcanvas-end flex-grow-1" data-bs-scroll="true" tabindex="-1" id="navbarMenus" aria-labelledby="navbarMenusLabel">
+      <div class="offcanvas-header px-4 pb-0">
+        <h5 class="offcanvas-title" id="navbarMenusLabel">Philip Nichols</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" data-bs-target="#navbarMenus" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body p-4 pt-0 p-lg-0">
+        <hr class="d-lg-none">
+        <ul class="navbar-nav flex-row flex-wrap align-items-center me-auto"><li class="nav-item col-6 col-lg-auto">
+            <a class="nav-link py-2 px-0 px-lg-2" href="https://pnichols04.github.io/">
+              <i class="fas fa-home"></i>&nbsp;Home
+            </a>
+          </li><li class="nav-item col-6 col-lg-auto">
+            <a class="nav-link py-2 px-0 px-lg-2" href="https://pnichols04.github.io/about/">
+              <i class="fas fa-user"></i>&nbsp;About
+            </a>
+          </li>
+          <li class="nav-item col-6 col-lg-auto dropdown py-2 px-0 px-lg-2">
+            <a class="dropdown-toggle" href="#" class="nav-link"
+              id="navbarDropdownBlog" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Blog
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog" data-bs-popper="none">
+              <li>
+                <a class="dropdown-item text-wrap text-lg-nowrap"
+                  href="https://pnichols04.github.io/archives/">
+                  <i class="fas fa-fw fa-file-archive"></i>Archives
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-wrap text-lg-nowrap"
+                  href="https://pnichols04.github.io/series/">
+                  <i class="fas fa-fw fa-columns"></i>Series
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-wrap text-lg-nowrap"
+                  href="https://pnichols04.github.io/categories/">
+                  <i class="fas fa-fw fa-folder"></i>Categories
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-wrap text-lg-nowrap"
+                  href="https://pnichols04.github.io/tags/">
+                  <i class="fas fa-fw fa-tags"></i>Tags
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <hr class="d-lg-none">
+  <form class="search-bar ms-auto my-1" action="https://pnichols04.github.io/search/" novalidate>
+    <div class="input-group input-group-sm align-items-center">
+      <span class="btn btn-search disabled position-absolute left-0 border-0">
+        <i class="fas fa-fw fa-search fa-lg"></i>
+      </span>
+      <input class="py-2 form-control rounded search-input" name="q" type="search" aria-label="Search" required>
+    </div>
+  </form><hr class="d-lg-none">
+        <ul class="navbar-nav flex-row flex-wrap align-items-center ms-md-auto">
+<li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+<nav class="social-links nav justify-content-center flex-row">
+      <a class="nav-link social-link col-6 col-lg-auto p-1" target="_blank" href="https://github.com/pnichols04" title="GitHub" rel="noopener noreferrer">
+        <i class="fa-fw fab fa-github"></i>
+        <span class="ms-1 d-lg-none">GitHub</span>
+      </a>
+      <a class="nav-link social-link col-6 col-lg-auto p-1" target="_blank" href="https://www.patreon.com/nicholsphilip" title="Patreon" rel="noopener noreferrer">
+        <i class="fa-fw fab fa-patreon"></i>
+        <span class="ms-1 d-lg-none">Patreon</span>
+      </a>
+      <a class="nav-link social-link col-6 col-lg-auto p-1" target="_blank" href="https://www.paypal.com/paypalme/philipnichols1856" title="Paypal" rel="noopener noreferrer">
+        <i class="fa-fw fab fa-paypal"></i>
+        <span class="ms-1 d-lg-none">Paypal</span>
+      </a>
+  <a class="nav-link social-link col-6 col-lg-auto p-1" target="_blank" href="https://pnichols04.github.io/index.xml" title="RSS" rel="noopener noreferrer">
+    <i class="fas fa-fw fa-rss"></i>
+    <span class="ms-1 d-lg-none">RSS</span>
+  </a>
+</nav>
+
+</li>
+<li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+  <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white"></div>
+  <hr class="d-lg-none my-2">
+</li>
+<li class="nav-item dropdown py-1 py-lg-1 col-6 col-lg-auto">
+    <a class="nav-link px-0 px-lg-1" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-fw fa-globe"></i>
+        <span class="d-lg-none">Language</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+        <li>
+        <a class="dropdown-item active" href="https://pnichols04.github.io/">
+            English
+        </a>
+        </li>
+        <li>
+        <a class="dropdown-item" href="https://pnichols04.github.io/zh-cn/">
+            
+        </a>
+        </li></ul>
+</li>
+<li class="nav-item py-1 col-12 col-lg-auto">
+  <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white"></div>
+  <hr class="d-lg-none my-2">
+</li>
+<li class="nav-item dropdown col-6 col-lg-auto">
+    <a class="nav-link px-0 py-2 px-lg-1" href="#" id="fontSizeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-fw fa-font"></i>
+        <span class="d-lg-none">Font Size</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="fontSizeDropdown">
+        <li>
+            <button class="font-size-item dropdown-item" data-size="xs">
+                Extra Small
+            </button>
+        </li>
+        <li>
+            <button class="font-size-item dropdown-item" data-size="sm">
+                Small
+            </button>
+        </li>
+        <li>
+            <button class="font-size-item dropdown-item active" data-size="md">
+                Medium
+            </button>
+        </li>
+        <li>
+            <button class="font-size-item dropdown-item" data-size="lg">
+                Large
+            </button>
+        </li>
+        <li>
+            <button class="font-size-item dropdown-item" data-size="xl">
+                Extra Large
+            </button>
+        </li>
+    </ul>
+</li>
+<li class="nav-item dropdown col-6 col-lg-auto">
+    <a class="nav-link px-0 py-2 px-lg-1" href="#" id="modeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="mode-icon fas fa-fw fa-sun" id="modeIcon"></i>
+        <span class="d-lg-none">Mode</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="modeDropdown">
+        <li class="mode-item active" data-color-mode="light" data-icon="sun">
+            <button class="dropdown-item">
+                <i class="mode-icon fas fa-fw fa-sun"></i> Light
+            </button>
+        </li>
+        <li class="mode-item" data-color-mode="dark" data-icon="moon">
+            <button class="dropdown-item">
+                <i class="mode-icon fas fa-fw fa-moon"></i> Dark
+            </button>
+        </li>
+        <li class="mode-item" data-color-mode="auto" data-icon="adjust">
+            <button class="dropdown-item">
+                <i class="mode-icon fas fa-fw fa-adjust"></i> Auto
+            </button>
+        </li>
+    </ul>
+</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+</header>
+
+    <main class="container">
+      <div class="row content"><noscript>
+    <div class="alert alert-danger" role="alert">Your browser does not support JavaScript.</div>
+</noscript>
+<aside class="col-lg-4 sidebar d-flex order-lg-5">
+  <div class="container d-flex flex-column">
+    
+    <div class="accordion profile">
+  <div class="accordion-item card row text-center component">
+    <div class="accordion-header card-header border-0" id="profile-header">
+      <a class="accordion-button d-lg-none mb-2 collapsed shadow-none p-0 bg-transparent text-surface" type="button" data-bs-toggle="collapse" data-bs-target="#profile" aria-expanded="false" aria-controls="profile">
+        Profile
+      </a>
+    </div>
+    <div class="card-body collapse accordion-collapse accordion-body d-lg-block" id="profile" aria-labelledby="profile-header">
+      <div class="col-12 d-flex align-items-center justify-content-center"><picture><img class="profile-avatar rounded-circle " alt="Philip Nichols" src="https://pnichols04.github.io/images/pjn-avatar.jpg" loading="lazy" data-viewer-invisible width="800" height="800" />
+</picture></div>
+      <div class="col-12 profile-meta"><div class="profile-name fw-fold fs-lg">Philip Nichols</div><div class="profile-bio">Freelance developer who’s been around for everything from dancing babies and blinking marquees to 3D and machine learning</div><div class="profile-location"><i class="fas fa-fw fa-map-marker-alt"></i>Attleboro, MA, USA</div><div class="profile-about text-primary"><i class="fas fa-fw fa-user"></i><a href="https://pnichols04.github.io/about/">About</a></div><div class="profile-contact text-primary"><i class="fas fa-fw fa-question-circle"></i><a href="https://pnichols04.github.io/contact/">Contact Me</a></div></div>
+<nav class="social-links nav justify-content-center mt-1 justify-content-around">
+    <a class="nav-link social-link" href="mailto:philip.j.nichols@gmail.com" title="Email">
+      <i class="fas fa-fw fa-2x fa-envelope"></i>
+    </a>
+      <a class="nav-link social-link" target="_blank" href="https://github.com/pnichols04" title="GitHub" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-github"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://www.patreon.com/nicholsphilip" title="Patreon" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-patreon"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://www.paypal.com/paypalme/philipnichols1856" title="Paypal" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-paypal"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://twitter.com/PhilipNichols04" title="Twitter" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-twitter"></i>
+      </a>
+</nav>
+</div>
+  </div>
+</div>
+
+
+<div class="accordion taxonomies-toggle">
+    <section class="row card component accordion-item">
+        <div class="accordion-header card-header border-0">
+            <a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#taxonomies-toggle" aria-expanded="false" aria-controls="taxonomies-toggle">
+                Taxonomies
+            </a>
+        </div>
+        <div class="card-body collapse accordion-collapse accordion-body d-lg-block" id="taxonomies-toggle">
+            <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="taxonomySeriesTab" data-bs-toggle="tab" data-bs-target="#taxonomySeries" 
+                            type="button" role="tab" aria-controls="Series" aria-selected="true">
+                            Series
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="taxonomyCategoriesTab" data-bs-toggle="tab" data-bs-target="#taxonomyCategories" 
+                            type="button" role="tab" aria-controls="Categories" aria-selected="true">
+                            Categories
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="taxonomyTagsTab" data-bs-toggle="tab" data-bs-target="#taxonomyTags" 
+                            type="button" role="tab" aria-controls="Tags" aria-selected="true">
+                            Tags
+                        </button>
+                    </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="taxonomyArchivesTab" data-bs-toggle="tab" data-bs-target="#taxonomyArchive" 
+                        type="button" role="tab" aria-controls="taxonomyArchives" aria-selected="true">
+                        Archives
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content mt-3">
+                    <div class="tab-pane active" id="taxonomySeries" role="tabpanel" aria-labelledby="taxonomySeriesTab" tabindex="0">
+                        <a href="https://pnichols04.github.io/series/boids-in-three.js/" class="btn btn-sm btn-secondary post-taxonomy ps-3 post-series me-2 mb-2" title="Boids in Three.js">
+                            Boids in Three.js
+                            <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+                        </a>
+                    </div>
+                    <div class="tab-pane" id="taxonomyCategories" role="tabpanel" aria-labelledby="taxonomyCategoriesTab" tabindex="0">
+                        <a href="https://pnichols04.github.io/categories/three.js/" class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title="Three.js">
+                            Three.js
+                            <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+                        </a>
+                        <a href="https://pnichols04.github.io/categories/tutorial/" class="btn btn-sm btn-secondary post-taxonomy ps-3 post-category me-2 mb-2" title="Tutorial">
+                            Tutorial
+                            <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+                        </a>
+                    </div>
+                    <div class="tab-pane" id="taxonomyTags" role="tabpanel" aria-labelledby="taxonomyTagsTab" tabindex="0">
+                        <a href="https://pnichols04.github.io/tags/boids/" class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title="Boids">
+                            Boids
+                            <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+                        </a>
+                        <a href="https://pnichols04.github.io/tags/three.js/" class="btn btn-sm btn-secondary post-taxonomy ps-3 post-tag me-2 mb-2" title="Three.js">
+                            Three.js
+                            <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+                        </a>
+                    </div>
+                <div class="tab-pane" id="taxonomyArchive" role="tabpanel" aria-labelledby="taxonomyArchiveTab" tabindex="0">
+
+    <a href="https://pnichols04.github.io/archives/2022/" class="btn btn-sm btn-secondary post-taxonomy ps-3 me-2 mb-2" title="2022">
+    2022 <span class="badge badge-sm text-secondary bg-white ms-1">1</span>
+    </a>
+
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="accordion posts-toggle">
+    <section class="row card component accordion-item">
+        <div class="accordion-header card-header border-0">
+            <a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#posts-toggle" aria-expanded="false" aria-controls="posts-toggle">
+                Posts
+            </a>
+        </div>
+        <div class="card-body collapse accordion-collapse accordion-body d-lg-block" id="posts-toggle">
+            <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="featured-posts-tab" data-bs-toggle="tab" data-bs-target="#featured-posts" 
+                        type="button" role="tab" aria-controls="featured-posts" aria-selected="true">
+                        Featured Posts
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="recent-posts-tab" data-bs-toggle="tab" data-bs-target="#recent-posts" 
+                        type="button" role="tab" aria-controls="recent-posts" aria-selected="true">
+                        Recent Posts
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content mt-3">
+                <div class="tab-pane active" id="featured-posts" role="tabpanel" aria-labelledby="featured-posts-tab" tabindex="0">
+                    <ul class="post-list list-unstyled ms-1">
+                    <li class="mb-2">
+    <div class="d-flex">
+        <div class="flex-shrink-0 d-flex justify-content-center align-items-center" style="max-width: 100px"><picture><img class="img-fluid" alt="Boids in Three.js, Part Zero: Setting Up" src="https://pnichols04.github.io/many-boids.webp" loading="lazy"
+    
+    />
+  </picture>
+        </div>
+        <div class="flex-grow-1 d-flex flex-column h-auto justify-content-center ms-3">
+            <a class="post-title" href="https://pnichols04.github.io/blog/threejs-boids-0-setting-up/">Boids in Three.js, Part Zero: Setting Up</a>
+            <div class="post-meta mt-2">
+                <span class="post-date">August 30, 2022</span>
+            </div>
+        </div>
+    </div>
+                    </li>
+                    </ul>
+                </div>
+                <div class="tab-pane" id="recent-posts" role="tabpanel" aria-labelledby="recent-posts-tab" tabindex="0">
+                    <ul class="post-list list-unstyled ms-1">
+                    <li class="mb-2">
+    <div class="d-flex">
+        <div class="flex-shrink-0 d-flex justify-content-center align-items-center" style="max-width: 100px"><picture><img class="img-fluid" alt="Boids in Three.js, Part Zero: Setting Up" src="https://pnichols04.github.io/many-boids.webp" loading="lazy"
+    
+    />
+  </picture>
+        </div>
+        <div class="flex-grow-1 d-flex flex-column h-auto justify-content-center ms-3">
+            <a class="post-title" href="https://pnichols04.github.io/blog/threejs-boids-0-setting-up/">Boids in Three.js, Part Zero: Setting Up</a>
+            <div class="post-meta mt-2">
+                <span class="post-date">August 30, 2022</span>
+            </div>
+        </div>
+    </div>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="accordion post-toc">
+  <div class="accordion-item row mb-4 card component" id="postTOC">
+    <div class="card-header accordion-header">
+      <h2 class="card-title fs-4 my-2 text-surface d-none d-lg-block">Contents</h2>
+      <a class="accordion-button d-lg-none mb-1 collapsed shadow-none p-0 bg-transparent" type="button" data-bs-toggle="collapse" data-bs-target="#post-toc" aria-expanded="false" aria-controls="post-toc">
+        Contents
+      </a>
+    </div>
+    <div class="card-body collapse accordion-collapse accordion-body d-lg-block" id="post-toc" aria-labelledby="post-toc-header">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#performance-counters">Performance Counters</a></li>
+    <li><a href="#gui">GUI</a></li>
+  </ul>
+</nav>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    
+  </div>
+</aside>
+<div class="col-lg-8">
+  <div class="container"><nav class="row card component" aria-label="breadcrumb">
+  <div class="card-body pb-0">
+    <ol class="breadcrumb"><li class="breadcrumb-item text-surface"><a href="https://pnichols04.github.io/">Home</a></li><li class="breadcrumb-item text-surface"><a href="https://pnichols04.github.io/blog/">Blogs</a></li><li class="breadcrumb-item active">Boids in Three.js, Part Zero: Setting Up</li></ol>
+  </div>
+</nav><div class="post-panel-wrapper position-sticky">
+  <div class="d-flex flex-column component rounded post-panel position-absolute border">
+    
+    <a class="action action-panel-toggler" role="button" title="Panel toggler">
+      <i class="fas fa-fw fa-chevron-circle-down"></i>
+    </a>
+    <a id="sidebarToggler" class="action d-none d-lg-block" role="button" title="Sidebar toggler">
+  <i class="fas fa-fw fa-expand-alt" data-fa-transform="rotate-45"></i>
+</a>
+
+    
+
+    
+    <a class="action" href="#post-copyright" role="button" aria-label="Copyright" title="Copyright">
+  <i class="fas fa-fw fa-copyright"></i>
+</a>
+    <a class="action" href="#post-comments" role="button" aria-label="Comments" title="Comments">
+  <i class="fas fa-fw fa-comments"></i>
+</a>
+    <a class="action" href="#postTOC" aria-controls="Table of contents" role="button" title="Table of contents">
+  <i class="fas fa-fw fa-list-alt"></i>
+</a>
+    
+  </div>
+</div><article class="row card component mb-4 post">
+  <div class="card-header ">
+    <h1 class="card-title post-title my-2">Boids in Three.js, Part Zero: Setting Up</h1>
+  </div>
+  <div class="card-body"><div class="post-meta mb-3">
+  <span class="post-date me-1 mb-1" title="created on 2022-08-30 09:00:00 -0400 EDT.">August 30, 2022</span><span class="post-reading-time me-1 mb-1">10 min read</span><a href="https://pnichols04.github.io/categories/three.js/" class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-category">
+      <i class="fas fa-fw fa-folder me-1"></i>Three.js</a><a href="https://pnichols04.github.io/categories/tutorial/" class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-category">
+      <i class="fas fa-fw fa-folder me-1"></i>Tutorial</a><a href="https://pnichols04.github.io/series/boids-in-three.js/" class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-series">
+      <i class="fas fa-fw fa-columns me-1"></i>Boids in Three.js</a><a href="https://pnichols04.github.io/tags/boids/" class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-tag">Boids</a><a href="https://pnichols04.github.io/tags/three.js/" class="btn btn-sm btn-secondary mb-1 me-2 py-0 pe-1 post-taxonomy post-tag">Three.js</a>
+</div>
+<picture><img class="post-featured-img w-100 mb-3" alt="Boids in Three.js, Part Zero: Setting Up" src="https://pnichols04.github.io/many-boids.webp"/>
+    </picture><div class="post-content mb-3" data-bs-spy="scroll" data-bs-target="#TableOfContents" tabindex="0"><p>In this series of posts, we&rsquo;ll explore how to implement a boids-type 
+flocking simulation in <a href="https://threejs.org" target="_blank" rel="noopener noreferrer">Three.js<i class="fas fa-external-link-square-alt ms-1"></i></a>.</p>
+<h1 id="background" data-numberify>Background<a class="anchor ms-1 d-none" href="#background">#</a></h1>
+<p>Boids (“bird-oid objects”) are the basis of an artificial life program 
+that mimics the flocking behavior of birds or the schooling of fish.  The concept 
+was initially developed in 1986 by Craig Reynolds, a member of the 
+visual effects teams on 1982&rsquo;s <em>Tron</em> and 1992&rsquo;s <em>Batman Returns</em>, 
+among a number of other feature films.</p>
+<p>In the simplest boids program, like the one we’ll develop initially, 
+the boids demonstrate three behaviors:</p>
+<dl>
+<dt>Separation</dt>
+<dd>Boids will steer to avoid crowding their nearby flockmates.</dd>
+<dt>Alignment</dt>
+<dd>Boids will steer toward the average heading of their nearby flockmates.</dd>
+<dt>Cohesion</dt>
+<dd>Boids will steer toward the average location (“center of mass”) of 
+their nearby flockmates.</dd>
+</dl>
+<h1 id="bootstrapping-the-project" data-numberify>Bootstrapping the Project<a class="anchor ms-1 d-none" href="#bootstrapping-the-project">#</a></h1>
+<p>We’ll begin with a fairly basic Three.js setup.</p>
+<div class="highlight" title="index.html"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="cp">&lt;!DOCTYPE html&gt;</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Boids in Three.js<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span> <span class="p">/&gt;</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">      <span class="na">async</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">      <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js&#34;</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">    <span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;importmap&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">        <span class="s2">&#34;imports&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">          <span class="s2">&#34;three&#34;</span><span class="o">:</span> <span class="s2">&#34;https://unpkg.com/three@0.143.0/build/three.module.js&#34;</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="ln">15</span><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="ln">16</span><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">18</span><span class="cl">      <span class="nt">body</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">19</span><span class="cl">        <span class="k">margin</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">20</span><span class="cl">        <span class="k">height</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">21</span><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="ln">22</span><span class="cl">      <span class="p">#</span><span class="nn">c</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">23</span><span class="cl">        <span class="k">width</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">24</span><span class="cl">        <span class="k">height</span><span class="p">:</span> <span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">25</span><span class="cl">        <span class="k">display</span><span class="p">:</span> <span class="kc">block</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">26</span><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="ln">27</span><span class="cl">    <span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">28</span><span class="cl">  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">29</span><span class="cl">
+</span></span><span class="line"><span class="ln">30</span><span class="cl">  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">31</span><span class="cl">    <span class="p">&lt;</span><span class="nt">canvas</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;c&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">canvas</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">32</span><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;module&#34;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;index.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">33</span><span class="cl">  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></div><div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kr">import</span> <span class="o">*</span> <span class="nx">as</span> <span class="nx">THREE</span> <span class="nx">from</span> <span class="s2">&#34;three&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl"><span class="kr">const</span> <span class="p">[</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">]</span> <span class="o">=</span> <span class="nx">init</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl"><span class="c1">// Code specific to the boids example will be placed here.
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="nx">animate</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">
+</span></span><span class="line"><span class="ln">11</span><span class="cl">
+</span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="kd">function</span> <span class="nx">animate</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">13</span><span class="cl">
+</span></span><span class="line"><span class="ln">14</span><span class="cl">  <span class="nx">requestAnimationFrame</span><span class="p">(</span> <span class="nx">animate</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">15</span><span class="cl">
+</span></span><span class="line"><span class="ln">16</span><span class="cl">  <span class="k">if</span> <span class="p">(</span> <span class="nx">resizeRendererToDisplaySize</span><span class="p">(</span> <span class="nx">renderer</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">
+</span></span><span class="line"><span class="ln">18</span><span class="cl">    <span class="kr">const</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">19</span><span class="cl">    <span class="nx">camera</span><span class="p">.</span><span class="nx">aspect</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">clientWidth</span> <span class="o">/</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">20</span><span class="cl">    <span class="nx">camera</span><span class="p">.</span><span class="nx">updateProjectionMatrix</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">21</span><span class="cl">
+</span></span><span class="line"><span class="ln">22</span><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="ln">23</span><span class="cl">
+</span></span><span class="line"><span class="ln">24</span><span class="cl">  <span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">25</span><span class="cl">
+</span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="ln">27</span><span class="cl">
+</span></span><span class="line"><span class="ln">28</span><span class="cl">
+</span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="kd">function</span> <span class="nx">init</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">30</span><span class="cl">
+</span></span><span class="line"><span class="ln">31</span><span class="cl">  <span class="kr">const</span> <span class="nx">scene</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">32</span><span class="cl">  <span class="kr">const</span> <span class="nx">camera</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span>
+</span></span><span class="line"><span class="ln">33</span><span class="cl">    <span class="mi">75</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">34</span><span class="cl">    <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">35</span><span class="cl">    <span class="mf">0.1</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">36</span><span class="cl">    <span class="mi">500</span>
+</span></span><span class="line"><span class="ln">37</span><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="ln">38</span><span class="cl">  <span class="nx">camera</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">39</span><span class="cl">  <span class="nx">camera</span><span class="p">.</span><span class="nx">lookAt</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">40</span><span class="cl">
+</span></span><span class="line"><span class="ln">41</span><span class="cl">  <span class="kr">const</span> <span class="nx">dirLight</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">DirectionalLight</span><span class="p">(</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="mf">1.</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">42</span><span class="cl">  <span class="nx">dirLight</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">43</span><span class="cl">  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">dirLight</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">44</span><span class="cl">
+</span></span><span class="line"><span class="ln">45</span><span class="cl">  <span class="kr">const</span> <span class="nx">hemiLight</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">HemisphereLight</span><span class="p">(</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="mh">0xffffff</span><span class="p">,</span> <span class="mf">0.6</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">46</span><span class="cl">  <span class="nx">hemiLight</span><span class="p">.</span><span class="nx">color</span><span class="p">.</span><span class="nx">setHSL</span><span class="p">(</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.6</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">47</span><span class="cl">  <span class="nx">hemiLight</span><span class="p">.</span><span class="nx">groundColor</span><span class="p">.</span><span class="nx">setHSL</span><span class="p">(</span> <span class="mf">0.095</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.75</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">48</span><span class="cl">  <span class="nx">hemiLight</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">49</span><span class="cl">  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">hemiLight</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">50</span><span class="cl">
+</span></span><span class="line"><span class="ln">51</span><span class="cl">  <span class="kr">const</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span> <span class="s1">&#39;c&#39;</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">52</span><span class="cl">  <span class="kr">const</span> <span class="nx">renderer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span><span class="p">(</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">53</span><span class="cl">    <span class="nx">canvas</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">54</span><span class="cl">    <span class="nx">antialias</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">55</span><span class="cl">  <span class="p">}</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">56</span><span class="cl">  <span class="k">return</span> <span class="p">[</span> <span class="nx">renderer</span><span class="p">,</span> <span class="nx">scene</span><span class="p">,</span> <span class="nx">camera</span> <span class="p">];</span>
+</span></span><span class="line"><span class="ln">57</span><span class="cl">
+</span></span><span class="line"><span class="ln">58</span><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="ln">59</span><span class="cl">
+</span></span><span class="line"><span class="ln">60</span><span class="cl">
+</span></span><span class="line"><span class="ln">61</span><span class="cl"><span class="kd">function</span> <span class="nx">resizeRendererToDisplaySize</span><span class="p">(</span> <span class="nx">renderer</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">62</span><span class="cl">
+</span></span><span class="line"><span class="ln">63</span><span class="cl">  <span class="kr">const</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">64</span><span class="cl">  <span class="kr">const</span> <span class="nx">pixelRatio</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">devicePixelRatio</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">65</span><span class="cl">  <span class="kr">const</span> <span class="nx">width</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">clientWidth</span> <span class="o">*</span> <span class="nx">pixelRatio</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">66</span><span class="cl">  <span class="kr">const</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">clientHeight</span> <span class="o">*</span> <span class="nx">pixelRatio</span> <span class="o">|</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">67</span><span class="cl">  <span class="kr">const</span> <span class="nx">needResize</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span> <span class="o">!==</span> <span class="nx">width</span> <span class="o">||</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="o">!==</span> <span class="nx">height</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">68</span><span class="cl">  <span class="k">if</span> <span class="p">(</span> <span class="nx">needResize</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">69</span><span class="cl">
+</span></span><span class="line"><span class="ln">70</span><span class="cl">    <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span><span class="p">(</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">,</span> <span class="kc">false</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">71</span><span class="cl">
+</span></span><span class="line"><span class="ln">72</span><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="ln">73</span><span class="cl">
+</span></span><span class="line"><span class="ln">74</span><span class="cl">  <span class="k">return</span> <span class="nx">needResize</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">75</span><span class="cl">
+</span></span><span class="line"><span class="ln">76</span><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>That’s a lot of code to render nothing at all, but it&rsquo;s all similar 
+to where most Three.js examples start.  As usual, we set up a scene, 
+camera, and renderer, as well as some lights.  We put that logic 
+into an <code>init()</code> function so that we can move it to the back end of the code file, where it will be out of the way of our more interesting work here.</p>
+<div class="alert alert-info" role="alert">
+<h4 class="alert-heading"><i class="alert-icon fas fa-fw fa-info-circle me-1"></i>
+Back to Basics</h4>
+<p>If you need help setting up a Three.js scene like this,
+a number of tutorials are available.  Each of the following sites 
+provides a solid introduction to the fundamentals, as well as coverage
+of more advanced and compelling techniques.</p>
+<ul>
+<li><a href="https://threejs.org/docs/#manual/" target="_blank" rel="noopener noreferrer">Three.js docs<i class="fas fa-external-link-square-alt ms-1"></i></a></li>
+<li>Lewy Blue’s <a href="https://discoverthreejs.com/" target="_blank" rel="noopener noreferrer">Discover Three.js!<i class="fas fa-external-link-square-alt ms-1"></i></a></li>
+<li>Sean Bradley’s <a href="https://sbcode.net/threejs/" target="_blank" rel="noopener noreferrer">Three.js and TypeScript Tutorials<i class="fas fa-external-link-square-alt ms-1"></i></a></li>
+</ul>
+</div>
+<h1 id="creating-the-first-boid" data-numberify>Creating the First Boid<a class="anchor ms-1 d-none" href="#creating-the-first-boid">#</a></h1>
+<div class="alert alert-warning" role="alert">
+<h4 class="alert-heading"><i class="alert-icon fas fa-fw fa-exclamation-triangle me-1"></i>
+BufferGeometry Objects</h4>
+<p>This section assumes some familiarity with <a href="https://threejs.org/docs/?q=buffergeom#api/en/core/BufferGeometry" target="_blank" rel="noopener noreferrer">Three.js <code>BufferGeometry</code><i class="fas fa-external-link-square-alt ms-1"></i></a> objects.</p>
+</div>
+<p>We’ll keep the geometry of our boids simple; they’ll just be 
+small square pyramids.  For that, we’ll declare a function to create 
+a buffer geometry for the pyramid, which we’ll be able to re-use for
+all of the boids.</p>
+<p>The pyramid comprises five points: the apex (<em>A</em>) and four points 
+for the base (<em>B</em>–<em>E</em>).  It also comprises six faces: one 
+for each of the triangular angled sides, and one for the base.  Because 
+the base is a quadrilateral, we’ll need two triangles to represent it.</p>
+<figure class="figure">
+  <img class="figure-img img-fluid rounded"
+       src="pyramid-diagram.png"
+       alt="Pyramid geometry for the boids" />
+  <figcaption class="figure-caption">
+    Pyramid geometry for the boids
+  </figcaption>
+</figure>
+<p>That’s not enough geometry for good smooth-shading support, however, 
+so we’ll repeat the vertices as needed, so that we end up with flat 
+shading.</p>
+<p>For pleasant proportions, we&rsquo;ll construct the pyramids so that the 
+height will be in the<br>
+<a href="https://en.wikipedia.org/wiki/Golden_ratio" target="_blank" rel="noopener noreferrer">golden ratio<i class="fas fa-external-link-square-alt ms-1"></i></a> to the 
+diagonal of the base.  After the 
+<code>import</code> statements in the script, we&rsquo;ll add a constant, <code>PHI</code>, to 
+represent that ratio.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl"><span class="kr">const</span> <span class="nx">PHI</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">sqrt</span><span class="p">(</span> <span class="mf">5.</span> <span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">;</span>
+</span></span></code></pre></div><p>Now we can declare a function to consruct a <code>BufferGeometry</code> that 
+describes the pyramid.  For our current purposes, we only need to 
+construct a <code>position</code> array; repeating the vertices, which we’re 
+doing to support flat shading, also relieves us from worrying about 
+<code>index</code>, <code>color</code>, <code>normal</code>, and <code>uv</code>, at least for now.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kd">function</span> <span class="nx">createBoidGeometry</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">  <span class="kr">const</span> <span class="nx">r</span> <span class="o">=</span> <span class="p">(</span> <span class="nx">PHI</span> <span class="o">-</span> <span class="mf">1.</span> <span class="p">)</span> <span class="o">/</span> <span class="mf">4.</span> <span class="o">*</span> <span class="nx">PHI</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">  <span class="kr">const</span> <span class="nx">h</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nx">PHI</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">  <span class="kr">const</span> <span class="nx">position</span> <span class="o">=</span> <span class="nx">Float32Array</span><span class="p">.</span><span class="nx">from</span><span class="p">(</span> <span class="p">[</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">    <span class="c1">// Angled side in +x, -z
+</span></span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// A (apex)
+</span></span></span><span class="line"><span class="ln"> 9</span><span class="cl"><span class="c1"></span>           <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// B (base corner in +x)
+</span></span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="c1">// C (base corner in -z)
+</span></span></span><span class="line"><span class="ln">11</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">    <span class="c1">// Angled side in -x, -z
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// A
+</span></span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="c1">// C
+</span></span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="c1"></span>    <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// D (base corner in -x)
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">    <span class="c1">// Angled side in -x, +z
+</span></span></span><span class="line"><span class="ln">18</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// A
+</span></span></span><span class="line"><span class="ln">19</span><span class="cl"><span class="c1"></span>    <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// D
+</span></span></span><span class="line"><span class="ln">20</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="nx">r</span><span class="p">,</span> <span class="c1">// E (base corner in -x)
+</span></span></span><span class="line"><span class="ln">21</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln">22</span><span class="cl">    <span class="c1">// Angled side in +x, +z
+</span></span></span><span class="line"><span class="ln">23</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// A
+</span></span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="nx">r</span><span class="p">,</span> <span class="c1">// E
+</span></span></span><span class="line"><span class="ln">25</span><span class="cl"><span class="c1"></span>           <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// B
+</span></span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln">27</span><span class="cl">    <span class="c1">// Base half in -z
+</span></span></span><span class="line"><span class="ln">28</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="c1">// C
+</span></span></span><span class="line"><span class="ln">29</span><span class="cl"><span class="c1"></span>           <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// B
+</span></span></span><span class="line"><span class="ln">30</span><span class="cl"><span class="c1"></span>    <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// D
+</span></span></span><span class="line"><span class="ln">31</span><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="ln">32</span><span class="cl">    <span class="c1">// Base half in +z
+</span></span></span><span class="line"><span class="ln">33</span><span class="cl"><span class="c1"></span>           <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// B
+</span></span></span><span class="line"><span class="ln">34</span><span class="cl"><span class="c1"></span>           <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="nx">r</span><span class="p">,</span> <span class="c1">// E
+</span></span></span><span class="line"><span class="ln">35</span><span class="cl"><span class="c1"></span>    <span class="o">-</span> <span class="mf">1.</span> <span class="o">*</span> <span class="nx">r</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>        <span class="mi">0</span><span class="p">,</span> <span class="c1">// D
+</span></span></span><span class="line"><span class="ln">36</span><span class="cl"><span class="c1"></span>  <span class="p">]</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">37</span><span class="cl">
+</span></span><span class="line"><span class="ln">38</span><span class="cl">  <span class="kr">const</span> <span class="nx">geometry</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">BufferGeometry</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">39</span><span class="cl">  <span class="nx">geometry</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span>
+</span></span><span class="line"><span class="ln">40</span><span class="cl">    <span class="s1">&#39;position&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">41</span><span class="cl">    <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Float32BufferAttribute</span><span class="p">(</span> <span class="nx">position</span><span class="p">,</span> <span class="mi">3</span> <span class="p">)</span>
+</span></span><span class="line"><span class="ln">42</span><span class="cl">  <span class="p">);</span>
+</span></span><span class="line"><span class="ln">43</span><span class="cl">  <span class="nx">geometry</span><span class="p">.</span><span class="nx">computeVertexNormals</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">44</span><span class="cl">
+</span></span><span class="line"><span class="ln">45</span><span class="cl">  <span class="k">return</span> <span class="nx">geometry</span><span class="p">;</span>
+</span></span><span class="line"><span class="ln">46</span><span class="cl">
+</span></span><span class="line"><span class="ln">47</span><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>We can use the geometry returned from the <code>createBoidGeometry</code> function 
+together with a <code>Material</code> to construct a <code>Mesh</code>.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="kr">const</span> <span class="nx">boidMaterial</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshPhongMaterial</span><span class="p">(</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 2</span><span class="cl">  <span class="nx">color</span><span class="o">:</span> <span class="mh">0x049ef4</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">  <span class="nx">emissive</span><span class="o">:</span> <span class="mh">0x000000</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">  <span class="nx">specular</span><span class="o">:</span> <span class="mh">0x111111</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">  <span class="nx">shininess</span><span class="o">:</span> <span class="mi">30</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">  <span class="nx">reflectivity</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 7</span><span class="cl">  <span class="nx">refractionRatio</span><span class="o">:</span> <span class="mf">0.98</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl"><span class="p">}</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">
+</span></span><span class="line"><span class="ln">10</span><span class="cl"><span class="kr">const</span> <span class="nx">boidGeometry</span> <span class="o">=</span> <span class="nx">createBoidGeometry</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">
+</span></span><span class="line"><span class="ln">12</span><span class="cl"><span class="c1">// Prototype boid
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="c1"></span><span class="kr">const</span> <span class="nx">boidMesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span> <span class="nx">boidGeometry</span><span class="p">,</span> <span class="nx">boidMaterial</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl"><span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">boidMesh</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">15</span><span class="cl"><span class="c1">// End
+</span></span></span></code></pre></div><p>Now we can fire up a web server (see any of the introductory 
+tutorials referred to above) and see our prototypical boid.</p>
+<figure class="figure">
+  <img class="figure-img img-fluid rounded"
+       src="pyramid-three.webp"
+       alt="Rendered prototype boid" />
+  <figcaption class="figure-caption">
+    Rendered prototype boid
+  </figcaption>
+</figure>
+<h1 id="more-boids" data-numberify>More Boids<a class="anchor ms-1 d-none" href="#more-boids">#</a></h1>
+<p>One boid doesn’t make for much of a demonstration of flocking 
+behaviors.  To fill out the flock, we&rsquo;ll distribute several boids 
+throughout the world.  Our distribution method here will be to select 
+random points in camera space and unproject them into world space.  This 
+choice of method is arbitrary, though; any method that created a bunch 
+of boids distributed in space would suffice.</p>
+<p>Once we start the boids flocking, we’ll need to address each one 
+during each frame of the animation, so we’ll also create an array to 
+hold references to them.  This way, we won’t have to walk the scene 
+graph every frame for this purpose.</p>
+<p>First, we’ll add a <code>params</code> object before the call to the <code>init()</code> 
+function to store the number of boids we want to create.  (We’re using
+an object here, rather than a value, to support the GUI we’ll add at
+the end of this post.  We define it before the call to <code>init()</code> so 
+that we can construct that GUI inside of <code>init()</code> later.)</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl"><span class="kr">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">  <span class="nx">boidsCount</span><span class="o">:</span> <span class="mi">64</span><span class="p">,</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>Now, let’s replace the code between “<code>// Prototype boid</code>” and 
+“<code>// End</code>”, which created a single prototype boid with the following 
+code to create our specified number of boids.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln"> 1</span><span class="cl"><span class="c1">// Create a flock of boids
+</span></span></span><span class="line"><span class="ln"> 2</span><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">createBoids</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 3</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 4</span><span class="cl">  <span class="k">while</span> <span class="p">(</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;</span> <span class="nx">params</span><span class="p">.</span><span class="nx">boidsCount</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln"> 5</span><span class="cl">
+</span></span><span class="line"><span class="ln"> 6</span><span class="cl">    <span class="c1">// Get random x, y, and z in camera space
+</span></span></span><span class="line"><span class="ln"> 7</span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">cameraSpaceLocation</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span>
+</span></span><span class="line"><span class="ln"> 8</span><span class="cl">      <span class="nx">THREE</span><span class="p">.</span><span class="nx">MathUtils</span><span class="p">.</span><span class="nx">lerp</span><span class="p">(</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="p">),</span>
+</span></span><span class="line"><span class="ln"> 9</span><span class="cl">      <span class="nx">THREE</span><span class="p">.</span><span class="nx">MathUtils</span><span class="p">.</span><span class="nx">lerp</span><span class="p">(</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="p">),</span>
+</span></span><span class="line"><span class="ln">10</span><span class="cl">      <span class="nx">THREE</span><span class="p">.</span><span class="nx">MathUtils</span><span class="p">.</span><span class="nx">lerp</span><span class="p">(</span> <span class="mf">0.94</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="p">)</span>
+</span></span><span class="line"><span class="ln">11</span><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="ln">12</span><span class="cl">    <span class="c1">// Unproject camera space location to world space
+</span></span></span><span class="line"><span class="ln">13</span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">worldLocation</span> <span class="o">=</span> <span class="nx">cameraSpaceLocation</span><span class="p">.</span><span class="nx">clone</span><span class="p">().</span><span class="nx">unproject</span><span class="p">(</span> <span class="nx">camera</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">14</span><span class="cl">
+</span></span><span class="line"><span class="ln">15</span><span class="cl">    <span class="c1">// Create and position mesh
+</span></span></span><span class="line"><span class="ln">16</span><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">boidMesh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span><span class="p">(</span> <span class="nx">boidGeometry</span><span class="p">,</span> <span class="nx">boidMaterial</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">17</span><span class="cl">    <span class="nx">boidMesh</span><span class="p">.</span><span class="nx">position</span><span class="p">.</span><span class="nx">copy</span><span class="p">(</span> <span class="nx">worldLocation</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">18</span><span class="cl">
+</span></span><span class="line"><span class="ln">19</span><span class="cl">    <span class="nx">boids</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">boidMesh</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">20</span><span class="cl">    <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">boidMesh</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">21</span><span class="cl">
+</span></span><span class="line"><span class="ln">22</span><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="ln">23</span><span class="cl">
+</span></span><span class="line"><span class="ln">24</span><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="ln">25</span><span class="cl">
+</span></span><span class="line"><span class="ln">26</span><span class="cl"><span class="nx">createBoids</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">27</span><span class="cl"><span class="c1">// End
+</span></span></span></code></pre></div><p>And now we’re looking at something like this.</p>
+<figure class="figure">
+  <img class="figure-img img-fluid rounded"
+       src="many-boids.webp"
+       alt="Many boids" />
+  <figcaption class="figure-caption">
+    Many boids
+  </figcaption>
+</figure>
+<div class="alert alert-dark" role="alert">
+<h4 class="alert-heading"><i class="alert-icon fas fa-fw fa-info-circle me-1"></i>
+Why (How) Does This Work?</h4>
+<p>While we usually think of the screen as a plane, <em>screen space</em> or 
+<em>camera space</em> is a cube, with <em>x</em>, <em>y</em>, and <em>z</em> values in the
+closed interval [ −1.0, 1.0 ].  (These are called 
+<em>normalized device coordinates</em>.)  By choosing random 
+values in those intervals and unprojecting them into world space, we 
+yield points that are distributed throughout that portion of the 
+world that lies within the camera&rsquo;s view frustum.</p>
+<p>In this sense, the <em>x</em> and <em>y</em> values, which range from left to 
+right and top to bottom edges of the screen, respectively, are fairly 
+intuitive.  The <em>z</em> value, which ranges from the camera&rsquo;s near clipping 
+plane to its far clipping plane, is less so.  It will suffice for now 
+to say that the <em>z</em> values in camera space unproject to world space 
+in a fashion that is weighted extremely heavily toward the near 
+clipping plane and thus toward the camera itself.</p>
+<p>Therefore, rather than 
+selecting values over the whole interval of <em>z</em> (like we do for <em>x</em> and 
+<em>y</em>), we select values at the high end of the interval (0.94 to 0.99 
+in the provided code). This avoids having the points cluster very 
+near to the camera.</p>
+</div>
+<p>Now we have lots of boids, and those boids are starting out 
+distributed throughout our view of the world.  With just a couple more 
+foundational items, we’ll be ready to start making them flock.</p>
+<h1 id="performance-counters-and-gui" data-numberify>Performance Counters and GUI<a class="anchor ms-1 d-none" href="#performance-counters-and-gui">#</a></h1>
+<p>As a final step in the project’s initial setup, we’ll add 
+performance counters and a GUI.</p>
+<h2 id="performance-counters" data-numberify>Performance Counters<a class="anchor ms-1 d-none" href="#performance-counters">#</a></h2>
+<p>First, we import the Stats module by adding this line after the import 
+for Three.js itself.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl"><span class="kr">import</span> <span class="nx">Stats</span> <span class="nx">from</span> <span class="s1">&#39;https://unpkg.com/three@0.143.0/examples//jsm/libs/stats.module.js&#39;</span><span class="p">;</span>
+</span></span></code></pre></div><p>Then, before the <code>return</code> from the <code>init()</code> function, we’ll initialize 
+the <code>Stats</code> object.  Additionally, we’ll modify the <code>return</code> statement 
+to also return the <code>Stats</code> object, so that we can hold a reference to 
+it for updating the display.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="ln">1</span><span class="cl"><span class="gd">- return [ renderer, scene, camera ];
+</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="gd"></span><span class="gi">+ const stats = new Stats();
+</span></span></span><span class="line"><span class="ln">3</span><span class="cl"><span class="gi">+ document.body.appendChild( stats.dom );
+</span></span></span><span class="line"><span class="ln">4</span><span class="cl"><span class="gi"></span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl"><span class="gi">+ return [ renderer, scene, camera, stats ];
+</span></span></span></code></pre></div><p>Then we’ll modify the call to <code>init()</code> to capture that reference.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="ln">1</span><span class="cl"><span class="gd">- const [ renderer, scene, camera ] = init();
+</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="gd"></span><span class="gi">+ const [ renderer, scene, camera, stats ] = init();
+</span></span></span></code></pre></div><p>And, finally, we’ll update the <code>Stats</code> object inside of the 
+<code>animate()</code> function, just before the call to 
+<code>renderer.render(…)</code>.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="ln">1</span><span class="cl"><span class="gi">+ stats.update();
+</span></span></span><span class="line"><span class="ln">2</span><span class="cl"><span class="gi"></span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">  renderer.render( scene, camera );
+</span></span></code></pre></div><h2 id="gui" data-numberify>GUI<a class="anchor ms-1 d-none" href="#gui">#</a></h2>
+<p>Many of the parameters that will appear in later articles in this 
+series will be amenable to run-time tweaking.  A GUI will offer 
+substantial assistance in this regard.</p>
+<p>We’ll start by importing the GUI module included with Three.js.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl"><span class="kr">import</span> <span class="p">{</span> <span class="nx">GUI</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;https://unpkg.com/three@0.143.0/examples/jsm/libs/lil-gui.module.min.js&#39;</span><span class="p">;</span>
+</span></span></code></pre></div><p>Now, we’ll construct the GUI inside of the <code>init()</code> function.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl">  <span class="kr">const</span> <span class="nx">gui</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">GUI</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">  <span class="nx">gui</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="nx">params</span><span class="p">,</span> <span class="s1">&#39;boidsCount&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+</span></span><span class="line"><span class="ln">3</span><span class="cl">    <span class="p">.</span><span class="nx">name</span><span class="p">(</span> <span class="s2">&#34;Number of boids&#34;</span> <span class="p">)</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">    <span class="p">.</span><span class="nx">onChange</span><span class="p">(</span> <span class="nx">createBoids</span> <span class="p">);</span>
+</span></span></code></pre></div><p>Right away, we can drag the slider right to add boids to the scene.<br>
+To be able to remove them, we’ll add another <code>while</code> loop to the 
+<code>createBoids()</code> function.</p>
+<div class="highlight" title="index.js"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="ln">1</span><span class="cl">  <span class="k">while</span> <span class="p">(</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">params</span><span class="p">.</span><span class="nx">boidsCount</span> <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="ln">2</span><span class="cl">
+</span></span><span class="line"><span class="ln">3</span><span class="cl">    <span class="kr">const</span> <span class="nx">boidToRemove</span> <span class="o">=</span> <span class="nx">boids</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+</span></span><span class="line"><span class="ln">4</span><span class="cl">    <span class="nx">scene</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span> <span class="nx">boidToRemove</span> <span class="p">);</span>
+</span></span><span class="line"><span class="ln">5</span><span class="cl">
+</span></span><span class="line"><span class="ln">6</span><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></div><h1 id="conclusion" data-numberify>Conclusion<a class="anchor ms-1 d-none" href="#conclusion">#</a></h1>
+<p>The complete code for this post is embedded below.  In the next post 
+in this series, we’ll add the actual flocking behaviors to 
+our boids.</p>
+<div class="ratio ratio-21x9 mb-4">
+  <script async src="https://jsfiddle.net/pnichols04/9dzf1hk2/embed/"></script>
+</div>
+
+</div></div></article><div class="post-copyright mb-3 row card component" id="post-copyright">
+    <div class="card-header">
+        <h2 class="card-title fs-4 my-2 text-surface">Copyright</h2>
+    </div>
+    <div class="card-body"><a class="d-flex align-items-center flex-column" target="_blank" rel="license noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en">
+  <span><i class="fab fa-fw fa-2x fa-creative-commons"></i><i class="fab fa-fw fa-2x fa-creative-commons-by"></i><i class="fab fa-fw fa-2x fa-creative-commons-nc"></i><i class="fab fa-fw fa-2x fa-creative-commons-nd"></i></span>
+  CC BY-NC-ND 4.0 
+</a>
+
+
+    </div>
+</div><div class="card component row post-comments" id="post-comments">
+  <div class="card-header">
+    <h2 class="card-title my-2 fs-4 text-surface">Comments</h2>
+  </div>
+  <div class="card-body"><script src="https://utteranc.es/client.js"
+  repo="pnichols04/pnichols04.github.io"
+  issue-term="pathname"
+  label="comment"
+  theme="github-light"
+  crossorigin="anonymous"
+  async>
+</script>
+</div>
+</div></div>
+</div>
+
+      </div>
+    </main><footer class="footer mt-auto py-3 text-center container"><div class="offcanvas offcanvas-bottom h-auto" tabindex="-1" id="offcanvasActionsPanel"
+  aria-labelledby="offcanvasActionsPanelLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title fs-4" id="offcanvasActionsPanelLabel">
+      <i class="fas fa-fw fa-th-large me-1"></i>
+      Actions
+    </h5>
+    <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="offcanvasActionsPanel" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body mt-2"><div class="social-share mb-4 d-flex overflow-auto">
+      <a class="btn-social-share d-flex flex-column align-items-center me-3" rel="noopener noreferrer" aria-label="Twitter Share Button"
+      target="_blank" href="https://twitter.com/intent/tweet?title=Boids%20in%20Three.js%2c%20Part%20Zero%3a%20Setting%20Up&url=https%3a%2f%2fpnichols04.github.io%2fblog%2fthreejs-boids-0-setting-up%2f">
+        <i class="fab fa-2x fa-fw fa-twitter mb-2"></i> Twitter
+      </a>
+      <a class="btn-social-share d-flex flex-column align-items-center me-3" rel="noopener noreferrer" aria-label="Facebook Share Button"
+        target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fpnichols04.github.io%2fblog%2fthreejs-boids-0-setting-up%2f">
+        <i class="fab fa-2x fa-fw fa-facebook-f mb-2"></i> Facebook
+      </a>
+    </div>
+    <hr class="mb-4"><div class="actions d-flex overflow-auto align-items-center">
+      <a role="button" class="action action-go-back d-flex flex-column align-items-center me-3" href="javascript: window.history.back();">
+        <span class="action-icon mb-2"><i class="fas fa-2x fa-chevron-circle-down" data-fa-transform="rotate-90"></i></span> Go back
+      </a>
+      <a role="button" class="action action-reload-page d-flex flex-column align-items-center me-3">
+        <span class="action-icon mb-2"><i class="fas fa-2x fa-redo-alt"></i></span> Reload
+      </a>
+      <a role="button" class="action action-copy-url d-flex flex-column align-items-center me-3">
+        <span class="action-icon mb-2"><i class="fas fa-2x fa-link"></i></span> Copy URL
+      </a>
+    </div>
+  </div>
+</div>
+<nav class="social-links nav justify-content-center mb-2">
+    <a class="nav-link social-link" href="mailto:philip.j.nichols@gmail.com" title="Email">
+      <i class="fas fa-fw fa-2x fa-envelope"></i>
+    </a>
+      <a class="nav-link social-link" target="_blank" href="https://facebook.com/nicholsphilip" title="Facebook" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-facebook-f"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://github.com/pnichols04" title="GitHub" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-github"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://linkedin.com/in/nicholsphilip" title="LinkedIn" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-linkedin-in"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://www.patreon.com/nicholsphilip" title="Patreon" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-patreon"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://www.paypal.com/paypalme/philipnichols1856" title="Paypal" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-paypal"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://stackoverflow.com/users/1170146" title="Stack Overflow" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-stack-overflow"></i>
+      </a>
+      <a class="nav-link social-link" target="_blank" href="https://twitter.com/PhilipNichols04" title="Twitter" rel="noopener noreferrer">
+        <i class="fa-fw fa-2x fab fa-twitter"></i>
+      </a>
+  <a class="nav-link social-link" target="_blank" href="https://pnichols04.github.io/index.xml" title="RSS" rel="noopener noreferrer">
+    <i class="fas fa-fw fa-2x fa-rss"></i>
+  </a>
+</nav>
+<div class="copyright mb-2">
+  Copyright © 2022 Philip Nichols. All Rights Reserved.
+</div>
+</footer>
+<script data-precache src="https://pnichols04.github.io/assets/main/bundle.min.826f9946737b97430169f3d6ea2aa8fe965573e985a2a3c7c1047b3965491925.js" integrity="sha256-gm&#43;ZRnN7l0MBafPW6iqo/pZVc&#43;mFoqPHwQR7OWVJGSU=" crossorigin="anonymous" defer></script><script data-precache src="https://pnichols04.github.io/assets/icons/bundle.min.9b65a1892e3a9ee67ad669fdde6abd4963c890151073f181b3e730bce85680a6.js" integrity="sha256-m2WhiS46nuZ61mn93mq9SWPIkBUQc/GBs&#43;cwvOhWgKY=" crossorigin="anonymous" defer></script>
+<script data-precache src="https://pnichols04.github.io/assets/viewer/bundle.min.9f713149f059d05fcb65e7f7c27308e61c384500e80ab1c333c2510a36a5d70c.js" integrity="sha256-n3ExSfBZ0F/LZef3wnMI5hw4RQDoCrHDM8JRCjal1ww=" crossorigin="anonymous" defer></script><script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('https:\/\/pnichols04.github.io\/service-worker.min.js').then(function(reg) {
+      console.log('Successfully registered service worker', reg);
+    }).catch(function(err) {
+      console.warn('Error whilst registering service worker', err);
+    });
+  });
+}
+</script>
+  </body>
+</html>

@@ -2,20 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://pnichols04.github.io/blog/a-three-js-starter-template/</loc>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
+  </url><url>
     <loc>https://pnichols04.github.io/blog/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://pnichols04.github.io/tags/boids/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://pnichols04.github.io/series/boids-in-three.js/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://pnichols04.github.io/blog/threejs-boids-0-setting-up/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
   </url><url>
     <loc>https://pnichols04.github.io/categories/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
@@ -27,8 +21,11 @@
                 href="https://pnichols04.github.io/categories/"
                 />
   </url><url>
+    <loc>https://pnichols04.github.io/tags/javascript/</loc>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
+  </url><url>
     <loc>https://pnichols04.github.io/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
@@ -40,21 +37,8 @@
                 href="https://pnichols04.github.io/"
                 />
   </url><url>
-    <loc>https://pnichols04.github.io/series/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="https://pnichols04.github.io/zh-cn/series/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://pnichols04.github.io/series/"
-                />
-  </url><url>
     <loc>https://pnichols04.github.io/tags/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
@@ -66,14 +50,14 @@
                 href="https://pnichols04.github.io/tags/"
                 />
   </url><url>
+    <loc>https://pnichols04.github.io/tags/template/</loc>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
+  </url><url>
     <loc>https://pnichols04.github.io/tags/three.js/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
   </url><url>
     <loc>https://pnichols04.github.io/categories/three.js/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
-  </url><url>
-    <loc>https://pnichols04.github.io/categories/tutorial/</loc>
-    <lastmod>2022-08-30T09:00:00-04:00</lastmod>
+    <lastmod>2022-08-29T00:00:00-04:00</lastmod>
   </url><url>
     <loc>https://pnichols04.github.io/about/</loc>
     <lastmod>2019-02-28T00:00:00+00:00</lastmod>
@@ -160,6 +144,18 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://pnichols04.github.io/search/"
+                />
+  </url><url>
+    <loc>https://pnichols04.github.io/series/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://pnichols04.github.io/zh-cn/series/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://pnichols04.github.io/series/"
                 />
   </url>
 </urlset>
